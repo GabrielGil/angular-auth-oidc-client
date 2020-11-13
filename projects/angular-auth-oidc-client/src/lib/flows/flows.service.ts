@@ -69,7 +69,7 @@ export class FlowsService {
         );
     }
 
-    processRefreshToken() {
+    processRefreshToken(accessTokenScope: string) {
         return this.refreshSessionWithRefreshTokens().pipe(
             switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext)),
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),

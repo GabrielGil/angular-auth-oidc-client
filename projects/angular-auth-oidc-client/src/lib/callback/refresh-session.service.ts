@@ -25,9 +25,9 @@ export class RefreshSessionService {
         private refreshSessionRefreshTokenService: RefreshSessionRefreshTokenService
     ) {}
 
-    forceRefreshSession() {
+    forceRefreshSession(accessTokenScope: string) {
         if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
-            return this.startRefreshSession().pipe(
+            return this.startRefreshSession(accessTokenScope).pipe(
                 map(() => {
                     const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                     if (isAuthenticated) {
@@ -42,7 +42,10 @@ export class RefreshSessionService {
             );
         }
 
-        return forkJoin([this.startRefreshSession(), this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1))]).pipe(
+        return forkJoin([
+            this.startRefreshSession(accessTokenScope),
+            this.silentRenewService.refreshSessionWithIFrameCompleted$.pipe(take(1)),
+        ]).pipe(
             map(([_, callbackContext]) => {
                 const isAuthenticated = this.authStateService.areAuthStorageTokensValid();
                 if (isAuthenticated) {
@@ -56,7 +59,7 @@ export class RefreshSessionService {
             })
         );
     }
-    private startRefreshSession() {
+    private startRefreshSession(accessTokenScope: string) {
         const isSilentRenewRunning = this.flowsDataService.isSilentRenewRunning();
         this.loggerService.logDebug(`Checking: silentRenewRunning: ${isSilentRenewRunning}`);
         const shouldBeExecuted = !isSilentRenewRunning;
@@ -78,10 +81,10 @@ export class RefreshSessionService {
 
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(accessTokenScope);
                 }
 
-                return this.refreshSessionIframeService.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe(accessTokenScope);
             })
         );
     }

@@ -104,7 +104,7 @@ export class OidcSecurityService {
                     return of(isAuthenticated);
                 }
 
-                return this.refreshSessionService.forceRefreshSession().pipe(
+                return this.refreshSessionService.forceRefreshSession('').pipe(
                     map((result) => !!result?.idToken && !!result?.accessToken),
                     switchMap((isAuth) => {
                         if (isAuth) {
@@ -177,7 +177,7 @@ export class OidcSecurityService {
     }
 
     forceRefreshSession() {
-        return this.refreshSessionService.forceRefreshSession();
+        return this.refreshSessionService.forceRefreshSession('');
     }
 
     // The refresh token and and the access token are revoked on the server. If the refresh token does not exist

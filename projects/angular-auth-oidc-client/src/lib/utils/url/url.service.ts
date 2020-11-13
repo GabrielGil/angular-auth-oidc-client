@@ -44,12 +44,12 @@ export class UrlService {
         return anyParameterIsGiven;
     }
 
-    getRefreshSessionSilentRenewUrl(): string {
+    getRefreshSessionSilentRenewUrl(accessTokenScope: string): string {
         if (this.flowHelper.isCurrentFlowCodeFlow()) {
-            return this.createUrlCodeFlowWithSilentRenew();
+            return this.createUrlCodeFlowWithSilentRenew(accessTokenScope);
         }
 
-        return this.createUrlImplicitFlowWithSilentRenew() || '';
+        return this.createUrlImplicitFlowWithSilentRenew(accessTokenScope) || '';
     }
 
     getAuthorizeUrl(customParams?: { [key: string]: string | number | boolean }): string {
@@ -167,6 +167,7 @@ export class UrlService {
     }
 
     private createAuthorizeUrl(
+        requestScope: string,
         codeChallenge: string,
         redirectUrl: string,
         nonce: string,
@@ -207,10 +208,15 @@ export class UrlService {
             encoder: new UriEncoder(),
         });
 
+        let scopeToUse = scope;
+        if (requestScope) {
+            scopeToUse = requestScope;
+        }
+
         params = params.set('client_id', clientId);
         params = params.append('redirect_uri', redirectUrl);
         params = params.append('response_type', responseType);
-        params = params.append('scope', scope);
+        params = params.append('scope', scopeToUse);
         params = params.append('nonce', nonce);
         params = params.append('state', state);
 
@@ -238,7 +244,7 @@ export class UrlService {
         return `${authorizationUrl}?${params}`;
     }
 
-    private createUrlImplicitFlowWithSilentRenew(): string {
+    private createUrlImplicitFlowWithSilentRenew(accessTokenScope: string): string {
         const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         const nonce = this.flowsDataService.createNonce();
 
@@ -252,14 +258,14 @@ export class UrlService {
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
-            return this.createAuthorizeUrl('', silentRenewUrl, nonce, state, 'none');
+            return this.createAuthorizeUrl(accessTokenScope, '', silentRenewUrl, nonce, state, 'none');
         }
 
         this.loggerService.logError('authWellKnownEndpoints is undefined');
         return null;
     }
 
-    private createUrlCodeFlowWithSilentRenew(): string {
+    private createUrlCodeFlowWithSilentRenew(accessTokenScope: string): string {
         const state = this.flowsDataService.getExistingOrCreateAuthStateControl();
         const nonce = this.flowsDataService.createNonce();
 
@@ -277,7 +283,7 @@ export class UrlService {
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
-            return this.createAuthorizeUrl(codeChallenge, silentRenewUrl, nonce, state, 'none');
+            return this.createAuthorizeUrl(accessTokenScope, codeChallenge, silentRenewUrl, nonce, state, 'none');
         }
 
         this.loggerService.logWarning('authWellKnownEndpoints is undefined');
@@ -297,7 +303,7 @@ export class UrlService {
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
-            return this.createAuthorizeUrl('', redirectUrl, nonce, state, null, customParams);
+            return this.createAuthorizeUrl('', '', redirectUrl, nonce, state, null, customParams);
         }
 
         this.loggerService.logError('authWellKnownEndpoints is undefined');
@@ -321,7 +327,7 @@ export class UrlService {
 
         const authWellKnownEndPoints = this.storagePersistanceService.read('authWellKnownEndPoints');
         if (authWellKnownEndPoints) {
-            return this.createAuthorizeUrl(codeChallenge, redirectUrl, nonce, state, null, customParams);
+            return this.createAuthorizeUrl('', codeChallenge, redirectUrl, nonce, state, null, customParams);
         }
 
         this.loggerService.logError('authWellKnownEndpoints is undefined');

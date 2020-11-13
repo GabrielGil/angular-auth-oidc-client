@@ -66,12 +66,13 @@ export class PeriodicallyTokenCheckService {
 
                 this.flowsDataService.setSilentRenewRunning();
 
+                const accessTokenScope = '';
                 if (this.flowHelper.isCurrentFlowCodeFlowWithRefeshTokens()) {
                     // Refresh Session using Refresh tokens
-                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens();
+                    return this.refreshSessionRefreshTokenService.refreshSessionWithRefreshTokens(accessTokenScope);
                 }
 
-                return this.refreshSessionIframeService.refreshSessionWithIframe();
+                return this.refreshSessionIframeService.refreshSessionWithIframe(accessTokenScope);
             })
         );
 
