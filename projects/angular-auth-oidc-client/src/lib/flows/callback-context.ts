@@ -11,6 +11,7 @@ export interface CallbackContext {
     jwtKeys: JwtKeys;
     validationResult: StateValidationResult;
     existingIdToken: any;
+    scopes: string;
 }
 
 export interface AuthResult {

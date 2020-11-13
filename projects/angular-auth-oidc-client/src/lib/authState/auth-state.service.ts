@@ -41,11 +41,15 @@ export class AuthStateService {
         this.publicEventsService.fireEvent<AuthorizationResult>(EventTypes.NewAuthorizationResult, authorizationResult);
     }
 
-    setAuthorizationData(accessToken: any, authResult: any) {
+    setAuthorizationData(accessToken: any, authResult: any, scopes: string) {
         this.loggerService.logDebug(accessToken);
         this.loggerService.logDebug('storing the accessToken');
 
-        this.storagePersistanceService.write('authzData', accessToken);
+        let storeName = 'authzData';
+        if (scopes) {
+            storeName = 'authzData' + scopes.replace(/\s/g, '');
+        }
+        this.storagePersistanceService.write(storeName, accessToken);
         this.persistAccessTokenExpirationTime(authResult);
         this.setAuthorizedAndFireEvent();
     }

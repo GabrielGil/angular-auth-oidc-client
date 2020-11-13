@@ -69,8 +69,8 @@ export class FlowsService {
         );
     }
 
-    processRefreshToken(accessTokenScope: string) {
-        return this.refreshSessionWithRefreshTokens().pipe(
+    processRefreshToken(scopes: string) {
+        return this.refreshSessionWithRefreshTokens(scopes).pipe(
             switchMap((callbackContext) => this.refreshTokensRequestTokens(callbackContext)),
             switchMap((callbackContext) => this.callbackHistoryAndResetJwtKeys(callbackContext)),
             switchMap((callbackContext) => this.callbackStateValidation(callbackContext)),
@@ -104,6 +104,7 @@ export class FlowsService {
             jwtKeys: null,
             validationResult: null,
             existingIdToken: null,
+            scopes: '',
         };
         return of(initialCallbackContext);
     }
@@ -135,13 +136,14 @@ export class FlowsService {
             jwtKeys: null,
             validationResult: null,
             existingIdToken: null,
+            scopes: '',
         };
 
         return of(callbackContext);
     }
 
     // STEP 1 Refresh session
-    private refreshSessionWithRefreshTokens(): Observable<CallbackContext> {
+    private refreshSessionWithRefreshTokens(scopes: string): Observable<CallbackContext> {
         const stateData = this.flowsDataService.getExistingOrCreateAuthStateControl();
         this.loggerService.logDebug('RefreshSession created. adding myautostate: ' + stateData);
         const refreshToken = this.authStateService.getRefreshToken();
@@ -158,6 +160,7 @@ export class FlowsService {
                 jwtKeys: null,
                 validationResult: null,
                 existingIdToken: idToken,
+                scopes,
             };
 
             this.loggerService.logDebug('found refresh code, obtaining new credentials with refresh code');
@@ -292,7 +295,7 @@ export class FlowsService {
         callbackContext.validationResult = validationResult;
 
         if (validationResult.authResponseIsValid) {
-            this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult);
+            this.authStateService.setAuthorizationData(validationResult.accessToken, callbackContext.authResult, callbackContext.scopes);
             return of(callbackContext);
         } else {
             const errorMessage = `authorizedCallback, token(s) validation failed, resetting. Hash: ${window.location.hash}`;

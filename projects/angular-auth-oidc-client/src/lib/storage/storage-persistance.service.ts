@@ -26,7 +26,7 @@ export class StoragePersistanceService {
         return this.oidcSecurityStorage.read(keyToRead);
     }
 
-    write(key: StorageKeys, value: any) {
+    write(key: string, value: any) {
         const keyToStore = this.createKeyWithPrefix(key);
         this.oidcSecurityStorage.write(keyToStore, value);
     }

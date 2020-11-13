@@ -86,6 +86,7 @@ export class SilentRenewService {
             jwtKeys: null,
             validationResult: null,
             existingIdToken: null,
+            scopes: '',
         };
 
         return this.flowsService.processSilentRenewCodeFlowCallback(callbackContext).pipe(

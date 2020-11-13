@@ -176,6 +176,10 @@ export class OidcSecurityService {
         this.authorize(options);
     }
 
+    getAccessTokenSilently(scopes: string) {
+        return this.refreshSessionService.forceRefreshSession(scopes);
+    }
+
     forceRefreshSession() {
         return this.refreshSessionService.forceRefreshSession('');
     }

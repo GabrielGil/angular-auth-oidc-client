@@ -95,7 +95,7 @@ describe('Auth State Service', () => {
                 state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
                 session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
             };
-            authStateService.setAuthorizationData('accesstoken', authResult);
+            authStateService.setAuthorizationData('accesstoken', authResult, '');
             expect(spy).toHaveBeenCalledWith('authzData', 'accesstoken');
         });
 
@@ -111,7 +111,7 @@ describe('Auth State Service', () => {
                 state: '7bad349c97cd7391abb6dfc41ec8c8e8ee8yeprJL',
                 session_state: 'gjNckdb8h4HS5us_3oz68oqsAhvNMOMpgsJNqrhy7kM.rBe66j0WPYpSx_c4vLM-5w',
             };
-            authStateService.setAuthorizationData('not used', authResult);
+            authStateService.setAuthorizationData('not used', authResult, '');
             expect(spy).toHaveBeenCalled();
         });
     });
