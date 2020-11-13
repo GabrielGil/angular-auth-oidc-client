@@ -3,3 +3,5 @@
 <br />
 Is Authenticated: {{ isAuthenticated$ | async }}
 <pre>{{ userData$ | async | json }}</pre>
+
+<button class="btn btn-primary" (click)="getMsGraphApiToken()">Get Token</button>

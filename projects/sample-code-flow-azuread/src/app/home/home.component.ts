@@ -16,4 +16,8 @@ export class HomeComponent implements OnInit {
         this.isAuthenticated$ = this.oidcSecurityService.isAuthenticated$;
         this.userData$ = this.oidcSecurityService.userData$;
     }
+
+    getMsGraphApiToken() {
+        this.oidcSecurityService.getAccessTokenSilently('user.read').subscribe((result) => console.log(result));
+    }
 }
